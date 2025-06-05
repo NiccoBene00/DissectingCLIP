@@ -56,6 +56,8 @@ to_pil = transforms.ToPILImage() # PIL := Python Imaging Library
 train_dataset = CIFAR100(root="./data", train=True, download=True)
 test_dataset = CIFAR100(root="./data", train=False, download=True)
 
+print(f"To PIL image: {train_dataset[0][0]}") # PIL image details
+
 """##Step2: Extract Image Embeddings from CLIP
 
 We're going to take each **CIFAR-100** image, preprocess it using  ```CLIPProcessor ```, pass it through the  ```CLIModel ``` to get image embeddings (features vectors). A the end we have to store these embeddings along with their labels for training our classifier.
