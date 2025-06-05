@@ -125,8 +125,9 @@ def extract_embeddings(dataloader):
 train_features, train_labels = extract_embeddings(train_loader)
 test_features, test_labels = extract_embeddings(test_loader)
 
-print("\nTrain features shape:", train_features.shape)
-print("\nTest features shape:", test_features.shape)
+# we just obtain such matrix where each row is the CLIP features (512-dimensional) of a single image 
+print("\nTrain features shape:", train_features.shape) # 50000 x 512
+print("\nTest features shape:", test_features.shape) # 10000 x 512
 
 """##Step3: Train a Classifier (SVM)
 
