@@ -59,7 +59,8 @@ with torch.no_grad():
   # We pass the tokenized prompts into CLIP’s text encoder
   # It returns one 512-dimensional vector per prompt — so the shape is
   # [100, 512]
-  text_features = clip_model.get_text_features(**text_inputs)
+  text_features = clip_model.get_text_features(**text_inputs) # with ** we just pass each pair
+                                                              # key-value
 
   # We have to normalize text features in order to compute cosine similarity
   # afterward
