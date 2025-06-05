@@ -167,6 +167,5 @@ Confronting the results with the experiment on **CIFAR-10** (see [here](https://
 * On **CIFAR-100** CLIP still performs remarkably well at **61.71%** despite much finer-grained categories and smaller, low-res images (32x32).
 
 This highlights CLIP's semantic power, but also its limits since confusion increases when class labels are more subtle or visually similar and some classes are less represented in CLIP's pretraining distribution.
-We're now able to outline that CLIP's embeddings are powerful, a lightweight supervised model can adapt better to dataset-specific decision boundaries, especially in tightly constrained or noisy datasets like **CIFAR**.
 
 """
