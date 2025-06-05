@@ -212,7 +212,7 @@ print(classification_report(test_labels, test_preds, target_names=class_names))
 
 The results is just telling us we're getting 30x better than chance without any model retraining - which is really impressive. Indeed **30.33%** is far above random chance (1% for **CIFAR-100**). It shows that CLIP's features encode meaningful semantic information - even though they weren't trained specifically on **CIFAR-100**.
 
-The aim of the next experiment will be understanding what problems we have to address in order to mitigate such accuracy.
+The aim of the next experiment will be understanding what problems we have to address in order to mitigate the limitations uncovered here.
 
 -----------------------------------------
 """
