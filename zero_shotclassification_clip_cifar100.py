@@ -134,7 +134,6 @@ zero_shot_acc = accuracy_score(test_labels, zero_shot_preds)
 print(f"Zero-shot Classification accuracy: {zero_shot_acc * 100:.2f}%")
 
 from sklearn.metrics import confusion_matrix, classification_report
-import seaborn as sns
 
 cm = confusion_matrix(test_labels, zero_shot_preds)
 class_names = test_dataset.classes
