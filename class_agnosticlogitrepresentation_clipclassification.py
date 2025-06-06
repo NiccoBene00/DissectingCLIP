@@ -113,6 +113,7 @@ from torchvision.datasets import CIFAR100
 from torch.utils.data import DataLoader
 import numpy as np
 from tqdm.notebook import tqdm
+import torch.nn.functional as F
 
 # Load CIFAR-100 dataset
 train_dataset = CIFAR100(root="./data", download=True, train=True)
@@ -133,6 +134,8 @@ def extract_logit_features(data_loader, text_features):
   image_features_list = []
   labels_list = []
 
+  entropies = []
+
   for inputs, labels in tqdm(data_loader):
     with torch.no_grad():
       image_features = model.get_image_features(**inputs)
@@ -141,12 +144,28 @@ def extract_logit_features(data_loader, text_features):
       logits = image_features @ text_features.T # cosine similarity
       # these similarity scores become the features for our downstream SVM
 
+      # Entropy Analysis
+      probs = F.softmax(logits, dim = 1) # softmax transforms logit into
+                                         # normalized probabilities
+      # so probs is a tensor of shape [batch_size, num_classes] where
+      # the sum along dim = 1 is always one
+
+      # Sparsity metrics
+      entropy = -torch.sum(probs * torch.log(probs + 1e-9), dim = 1)
+      # we have to add + 1e-9 since log(0) would give -inf (numerical unstable)
+      # entropy is a vector of batch_size values: i.e. entropy of each logit
+      
+      entropies.append(entropy.cpu().numpy())
+      
     image_features_list.append(logits.cpu().numpy())
     labels_list.append(labels.cpu().numpy())
 
   features = np.concatenate(image_features_list, axis = 0)
   labels = np.concatenate(labels_list, axis = 0)
 
+  all_entropy = np.concatenate(entropies)
+  print(f"Sparsity analysis through mean entropy: {all_entropy.mean():.4f}")   
+    
   return features, labels
 
 
