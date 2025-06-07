@@ -74,6 +74,25 @@ prompts = [
     "a centered object",
 ]
 
+prompts16 = [
+    "a photo of a  puppy",         
+    "a photo of a red parrot ", 
+    "a photo of a shark in the ocean",     
+    "a photo of a bumblebee on a flower",           
+    "a photo of a toddler",   
+    "a photo of a yellow object",    
+    "a photo of a vintage  car",         
+    "a photo of a military jet",            
+    "a photo of a shiny stainless steel pan",       
+    "a photo of a white pillow",             
+    "a photo of a watermelon on a table",    
+    "a photo of a bookshelf with books",     
+    "a photo taken in a sunny park",                
+    "a photo taken in a  kitchen",         
+    "a photo of a house cat on a couch",   
+    "a photo of a deer standing in the woods"       
+]
+
 """## Step2 LPP: Encode Class-Agnostic Prompts with CLIP
 
 
