@@ -57,6 +57,7 @@ train_dataset = CIFAR100(root="./data", train=True, download=True)
 test_dataset = CIFAR100(root="./data", train=False, download=True)
 
 print(f"To PIL image: {train_dataset[0][0]}") # PIL image details
+                                              # it would be 32x32 with mode=RGB
 
 """##Step2: Extract Image Embeddings from CLIP
 
@@ -92,6 +93,13 @@ class CLIPImageDataset(Dataset):
 train_clip_dataset = CLIPImageDataset(train_dataset)
 test_clip_dataset = CLIPImageDataset(test_dataset)
 
+image_tensor, label = train_clip_dataset[0]
+
+print("Image type:", type(image_tensor # torch.Tensor
+print("Image shape:", image_tensor.shape) # [3, 224, 334]
+print("Label type:", type(label)) # int
+print("Label value:", label) # for example: 19
+
 # dataloader allow us to iterate on batch data (generally 64 per time)
 # shuffle = false means data are read in order
 train_loader = DataLoader(train_clip_dataset, batch_size=64, shuffle=False)
@@ -102,6 +110,8 @@ def extract_embeddings(dataloader):
     all_embeddings = []
     all_labels = []
 
+    # we have to extract only img features embedding
+              
     with torch.no_grad(): # I'm not training but just feature extraction
                           # (inference)
         for images, labels in tqdm(dataloader):
@@ -114,7 +124,7 @@ def extract_embeddings(dataloader):
                                                   # NumPy arrar in order to use
                                                   # them on scikit-learn later
             all_embeddings.append(embeddings)
-            all_labels.extend(labels.numpy())
+            all_labels.extend(labels.numpy()) # labels remains untouched 
 
     # np.vstack(...) stacks all embeddings vertically into a big matrix:
     # shape will be [N, D] where N = number of images, D = embedding size (512)
@@ -126,8 +136,8 @@ train_features, train_labels = extract_embeddings(train_loader)
 test_features, test_labels = extract_embeddings(test_loader)
 
 # we just obtain such matrix where each row is the CLIP features (512-dimensional) of a single image 
-print("\nTrain features shape:", train_features.shape) # 50000 x 512
-print("\nTest features shape:", test_features.shape) # 10000 x 512
+print("\nTrain features shape:", train_features.shape) # 50000 x 512 = [N, D]
+print("\nTest features shape:", test_features.shape) # 10000 x 512 = [N, D]
 
 """##Step3: Train a Classifier (SVM)
 
@@ -151,7 +161,8 @@ X_train_scaled = scaler.fit_transform(train_features)
 
 
 X_test_scaled = scaler.transform(test_features) # no fit in order to avoid data
-                                                # leakage
+                                                # leakage, i.e. we don't show to the model
+                                                # data it shouldn't know
 
 # Train an SVM classifier
 # C is a paramter for regulation strength
