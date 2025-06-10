@@ -121,7 +121,7 @@ with torch.no_grad():
 # Normalize text features
 text_features = text_features / text_features.norm(dim = 1, keepdim = True)
 
-print(f"Encoded {len(prompts)} prompts into embeddings of shape: {text_features.shape}")
+print(f"Encoded {len(prompts)} prompts into embeddings of shape: {text_features.shape}") # torch.Size [32, 512]
 
 """## Step3 LPP: Generate Class-Agnostic Logit Vectors
 
