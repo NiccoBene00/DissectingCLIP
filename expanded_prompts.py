@@ -1,4 +1,4 @@
-# Below the expansion in cardinality and vocabulary of original 32 prompts
+# Below the expansion in cardinality and vocabulary of original 32 prompts for the class-agnostic experiment
 prompts_99 = [
     "a photo of an object",
     "a photo of something natural",
