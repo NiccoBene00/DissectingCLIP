@@ -1,3 +1,4 @@
+# Below the expansion in cardinality and vocabulary of original 32 prompts
 prompts_99 = [
     "a photo of an object",
     "a photo of something natural",
