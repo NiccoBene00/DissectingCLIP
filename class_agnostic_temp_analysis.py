@@ -110,11 +110,9 @@ def collate_fn(batch):
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=False, collate_fn=collate_fn)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, collate_fn=collate_fn)
 
-def extract_logit_features(data_loader, text_features, temperature):
+def extract_logit_features(data_loader, text_features):
     image_features_list = []
     labels_list = []
-    entropies = []
-    top1_confidences = []
 
     for inputs, labels in tqdm(data_loader):
         with torch.no_grad():
@@ -122,38 +120,41 @@ def extract_logit_features(data_loader, text_features, temperature):
             image_features = image_features / image_features.norm(dim=1, keepdim=True)
             logits = (image_features @ text_features.T) / temperature
 
-            probs = F.softmax(logits, dim=1)
-            entropy = -torch.sum(probs * torch.log(probs + 1e-9), dim=1)
-            entropies.append(entropy.cpu().numpy())
-
-            top1_conf = probs.max(dim=1).values
-            top1_confidences.append(top1_conf.cpu().numpy())
-
         image_features_list.append(logits.cpu().numpy())
         labels_list.append(labels.cpu().numpy())
 
     features = np.concatenate(image_features_list, axis=0)
     labels = np.concatenate(labels_list, axis=0)
-    all_entropy = np.concatenate(entropies)
-    all_top1_conf = np.concatenate(top1_confidences)
 
     return features, labels, all_entropy.mean(), all_top1_conf.mean()
 
+
+def compute_entropy_confidence(logits, temperature):
+    logits = torch.tensor(logits) / temperature
+    probs = F.softmax(logits, dim=1)
+    entropy = -torch.sum(probs * torch.log(probs + 1e-9), dim=1).mean().item()
+    top1_conf = probs.max(dim=1).values.mean().item()
+    return entropy, top1_conf
+
+train_logits, train_labels = extract_logit_features(train_loader, text_features)
+test_logits, test_labels = extract_logit_features(test_loader, text_features)
 
 temps = [0.5, 0.07, 0.05, 0.03, 0.02]
 accuracies = []
 entropies = []
 confidences = []
 
-
 for temp in temps:
     print(f"\nTesting with Temperature = {temp}")
-    train_features, train_labels, train_entropy, train_conf = extract_logit_features(train_loader, text_features, temp)
-    test_features, test_labels, test_entropy, test_conf = extract_logit_features(test_loader, text_features, temp)
+
+    scaled_train_logits = train_logits / temp
+    scaled_test_logits = test_logits / temp
+
+    test_entropy, test_conf = compute_entropy_confidence(test_logits, temp)
 
     svm_clf = SVC(kernel='linear', C=1.0, random_state=42)
-    svm_clf.fit(train_features, train_labels)
-    test_preds = svm_clf.predict(test_features)
+    svm_clf.fit(scaled_train_logits, train_labels)
+    test_preds = svm_clf.predict(scaled_test_logits)
     acc = accuracy_score(test_labels, test_preds)
 
     print(f"Mean Entropy: {test_entropy:.4f} | Top-1 Confidence: {test_conf:.4f} | SVM Accuracy: {acc*100:.2f}%")
