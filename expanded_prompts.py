@@ -1,5 +1,8 @@
 # Below the expansion in cardinality and vocabulary of original 32 prompts for the class-agnostic experiment
+# These set of prompts are used to obtain such improvement in the quality of CLIP embeddings
 prompts_99 = [
+    # original 32 prompts used in the baseline class-agnostic experiment
+    # ------------------------------------
     "a photo of an object",
     "a photo of something natural",
     "a photo of something man-made",
@@ -32,7 +35,8 @@ prompts_99 = [
     "a photo from a low angle",
     "a photo from a top view",
     "a centered object",
-
+    #----------------------------------
+    
     # new added prompts
     "a natural landscape",
     "a photo with multiple objects",
@@ -104,6 +108,7 @@ prompts_99 = [
 ]
 
 added_prompts_106 = [
+    # new 106 prompts generic-CIFAR-based
     "an object that is mostly one color",
     "an object that is multicolored",
     "a photo with a plain background",
@@ -213,6 +218,7 @@ added_prompts_106 = [
 ]
 
 added_prompts_210= [
+    # new 210 prompts generic-CIFAR-based
     "a absorbent-looking object",
     "a alien-looking object",
     "a asymmetrical-shaped object",
