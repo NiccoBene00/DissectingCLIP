@@ -229,3 +229,62 @@ As final consideration we observe that many animal classes underperform compared
 
 -----------------------------------------
 """
+
+"""
+## Clustering
+"""
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
+from collections import Counter
+
+# data features normalizer
+def scaled_softmax(features):
+    # transform features vector into probabilty distribution (every row sum to 1)
+    e_x = np.exp(features - np.max(features, axis=1, keepdims=True))
+    return e_x / e_x.sum(axis=1, keepdims=True)
+
+# Purity
+def purity_score(y_true, y_pred):
+    # matrix [key, value] where key is the ID of the cluster and value is the
+    # list of the associated true lables to the cluster element
+    # example: y_true = ["cat", "dog", "cat", "dog", "dog"]
+    #          y_pred = [0, 1, 0, 1, 1]
+
+    # truelabel_matrix {
+    #   0: ["cat", "cat"],
+    #   1: ["dog", "dog", "dog"]
+    # }
+
+    truelabel_matrix = {}
+    for true, pred in zip(y_true, y_pred): 
+        truelabel_matrix.setdefault(pred, []).append(true)
+
+    total = 0
+    for cluster in truelabel_matrix.values(): # count true labels for every 
+                                              # cluster
+        # in the example above we have cluster 0: "cat" most common with count 2 
+        # cluster 1: "dog" most common with 3
+        # total = 5
+        most_common_label = Counter(cluster).most_common(1)[0][1]
+        total += most_common_label
+    return total / len(y_true)
+
+# clustering
+def cluster_and_evaluate(features, true_labels, n_clusters):
+    print(f"\nRunning KMeans with {n_clusters} clusters...")
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    pred_labels = kmeans.fit_predict(features)
+
+    purity = purity_score(true_labels, pred_labels)
+
+    print(f"\nClustering evaluation:")
+    print(f"Purity: {purity:.4f}")
+
+    return pred_labels, purity
+
+n_classes = len(np.unique(test_labels))  # 100 for CIFAR-100
+print("number of dataset classes: ", n_classes)
+#scaled_features = scaled_softmax(test_features)
+pred_labels, purity = cluster_and_evaluate(test_features, test_labels, n_clusters=n_classes)
