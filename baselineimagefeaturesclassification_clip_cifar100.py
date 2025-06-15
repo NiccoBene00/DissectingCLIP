@@ -232,6 +232,9 @@ As final consideration we observe that many animal classes underperform compared
 
 """
 ## Clustering
+
+The following code is used to do clustering for the class-agnostic experiment as well, achieving results described in the thesis.
+
 """
 
 from sklearn.cluster import KMeans
